@@ -22,7 +22,7 @@ else: # Presumably a Mac
 	ICLOUD_DRIVE_DIR = str(Path.home()) + ICLOUD_DRIVE_BASE_PATH
 
 # I'm using the 'Pythonista 3' folder in my iCloud drive as base directory:
-ICLOUD_DIR = ICLOUD_DRIVE_DIR + '/iCloud~com~omz-software~Pythonista3/Documents'
+ICLOUD_DIR = str(Path.home()) +'/Downloads'
 
 # Input file: assume the file was exported from LibreView today
 INPUT_FILE_NAME = LIBRE_VIEW_USER + '_glucose_' + datetime.date.today().strftime("%d-%-m-%Y") + '.csv'
@@ -42,7 +42,7 @@ else: # Presumably a Mac
 	OUTPUT_FILE_PATH = ICLOUD_DIR + '/' + OUTPUT_FILE_NAME
 
 codecs.register_error("strict", codecs.ignore_errors)
-with codecs.open(INPUT_FILE_PATH, 'rU', 'utf-8') as f_in, open(OUTPUT_FILE_PATH, 'w') as f_out:
+with codecs.open(INPUT_FILE_PATH, 'r+', 'utf-8') as f_in, open(OUTPUT_FILE_PATH, 'w') as f_out:
 	input_reader = csv.reader(f_in, delimiter=',')
 	writer = csv.writer(f_out, delimiter=',')
 	next(input_reader)
@@ -54,7 +54,8 @@ with codecs.open(INPUT_FILE_PATH, 'rU', 'utf-8') as f_in, open(OUTPUT_FILE_PATH,
 		timestamp = row[2]
 		# For default date and 12h format, use this
 		# iso_timestamp = datetime.datetime.strptime(timestamp, '%m-%d-%Y %I:%M %p').isoformat()
-		iso_timestamp = datetime.datetime.strptime(timestamp, '%d-%m-%Y %H:%M').isoformat()
+		iso_timestamp = datetime.datetime.strptime(timestamp, '%d-%m-%Y %H:%M')
+		iso_timestamp = iso_timestamp.strftime('%Y-%m-%d %H:%M')
 		measurement = row[4] if row[4] else row[5]
 		if measurement:
 			writer.writerow([iso_timestamp, measurement])
